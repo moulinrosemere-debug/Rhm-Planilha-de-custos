@@ -41,6 +41,6 @@ function download(name,content,type){let a=document.createElement("a"),u=URL.cre
 document.getElementById("backup").onclick=()=>download("RHM_backup_"+new Date().toISOString().slice(0,10)+".json",JSON.stringify({app:"RHM",version:1,data:D},null,2),"application/json");
 document.getElementById("importBtn").onclick=()=>document.getElementById("file").click();
 document.getElementById("file").onchange=async e=>{try{let j=JSON.parse(await e.target.files[0].text()),d=j.data||j;if(!tabs.every(k=>Array.isArray(d[k])))throw Error("Arquivo incompatível");if(confirm("A importação substituirá os dados deste navegador. Continuar?")){D=d;save();drawTabs();form();alert("Backup importado.")}}catch(err){alert("Não foi possível importar esse arquivo.")}e.target.value=""};
-document.getElementById("csv").onclick=()=>{let c=cols(),lines=[c.map(x=>'"'+x[1]+'"').join(";")];D[current].forEach(r=>lines.push(c.map(x=>'"'+String(show(r,x[0])).replace(/"/g,'""')+'"').join(";")));download("RHM_"+current.toLowerCase().replace(/[^a-z0-9]+/g,"_")+".csv","\\ufeff"+lines.join("\\r\\n"),"text/csv;charset=utf-8")};
+document.getElementById("csv").onclick=()=>{let c=cols(),lines=[c.map(x=>'"'+x[1]+'"').join(";")];D[current].forEach(r=>lines.push(c.map(x=>'"'+String(show(r,x[0])).replace(/"/g,'""')+'"').join(";")));download("RHM_"+current.toLowerCase().replace(/[^a-z0-9]+/g,"_")+".csv","\ufeff"+lines.join("\r\n"),"text/csv;charset=utf-8")};
 drawTabs();form();summary();table();
 </script></body></html>
