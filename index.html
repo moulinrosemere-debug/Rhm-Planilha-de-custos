@@ -139,18 +139,24 @@ host.querySelectorAll("[data-pay-del]").forEach(b=>b.onclick=()=>{if(confirm("Ex
 }
 function renderSimpleStock(){
 const host=document.getElementById("simpleStockTable");if(!host)return;
-let products=[],weekly=[];try{products=JSON.parse(localStorage.getItem("rhmMultiProductCosts")||"[]")}catch(e){}try{weekly=JSON.parse(localStorage.getItem("rhmWeeklyPurchases")||"[]")}catch(e){}
+let products=[],weekly=[],manual={};
+try{products=JSON.parse(localStorage.getItem("rhmMultiProductCosts")||"[]")}catch(e){}
+try{weekly=JSON.parse(localStorage.getItem("rhmWeeklyPurchases")||"[]")}catch(e){}
+try{manual=JSON.parse(localStorage.getItem("rhmManualStockByProduct")||"{}")}catch(e){}
 const money=v=>n(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-if(!products.length){host.innerHTML='<div class="empty">Cadastre e salve os produtos no simulador para ver o estoque estimado.</div>';return}
 let rows=products.filter(p=>p.saved!==false).map(p=>{
-let isRed=/vermelha/i.test(p.name||""),isWhite=/branca/i.test(p.name||""),hist=weekly.filter(x=>isRed? n(x.redSacks)>0 : isWhite?n(x.whiteSacks)>0:false);
+let isRed=/vermelha/i.test(p.name||""),isWhite=/branca/i.test(p.name||""),hist=weekly.filter(x=>isRed?n(x.redSacks)>0:isWhite?n(x.whiteSacks)>0:false);
 let boughtKg,buyValue,freight=0;
-if(hist.length){boughtKg=hist.reduce((s,x)=>s+n(x[isRed?"redSacks":"whiteSacks"])*n(x.sackKg),0);buyValue=hist.reduce((s,x)=>s+n(x[isRed?"redSacks":"whiteSacks"])*n(x[isRed?"redPrice":"whitePrice"]),0);freight=hist.reduce((s,x)=>{let all=(n(x.redSacks)+n(x.whiteSacks))*n(x.sackKg);return s+(all? n(x.freight)*n(x[isRed?"redSacks":"whiteSacks"])*n(x.sackKg)/all:0)},0)}
+if(hist.length){boughtKg=hist.reduce((s,x)=>s+n(x[isRed?"redSacks":"whiteSacks"])*n(x.sackKg),0);buyValue=hist.reduce((s,x)=>s+n(x[isRed?"redSacks":"whiteSacks"])*n(x[isRed?"redPrice":"whitePrice"]),0);freight=hist.reduce((s,x)=>{let all=(n(x.redSacks)+n(x.whiteSacks))*n(x.sackKg);return s+(all?n(x.freight)*n(x[isRed?"redSacks":"whiteSacks"])*n(x.sackKg)/all:0)},0)}
 else{boughtKg=n(p.sacks)*n(p.sackKg);buyValue=n(p.sacks)*n(p.sackPrice);freight=n(p.freight)+n(p.otherLot)}
-let remaining=Math.max(0,boughtKg-n(p.sold)),unit=boughtKg?(buyValue+freight)/boughtKg:0;unit+=n(p.pack)+n(p.label)+n(p.other);
-return {name:p.name||"Produto sem nome",qty:remaining,unit,value:remaining*unit};
+let qty=Object.prototype.hasOwnProperty.call(manual,p.id)?n(manual[p.id]):Math.max(0,boughtKg-n(p.sold));
+let unit=(boughtKg?(buyValue+freight)/boughtKg:0)+n(p.pack)+n(p.label)+n(p.other);
+return {id:p.id,name:p.name||"Produto sem nome",qty,unit,value:qty*unit};
 });
-host.innerHTML='<table><thead><tr><th>Produto</th><th>Estoque estimado (kg/unid.)</th><th>Custo estimado por kg/unid.</th><th>Valor estimado em estoque</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+x.qty.toLocaleString("pt-BR",{maximumFractionDigits:2})+'</td><td>'+money(x.unit)+'</td><td><b>'+money(x.value)+'</b></td></tr>').join("")+'</tbody></table>';
+if(!rows.length){host.innerHTML='<div class="empty">Cadastre e salve cada produto no simulador para que ele apareça aqui.</div>';return}
+host.innerHTML='<div class="cards">'+rows.map(x=>'<div class="card" style="min-width:220px"><h3 style="margin:0 0 10px">'+esc(x.name)+'</h3><div class="field"><label for="stockqty-'+esc(x.id)+'">Estoque atual (kg/unid.)</label><input id="stockqty-'+esc(x.id)+'" data-stock-qty="'+esc(x.id)+'" type="number" min="0" step="0.01" value="'+x.qty+'" style="width:100%;border:1px solid #cbd5e1;border-radius:7px;padding:10px;font:inherit"></div><p class="small">Custo estimado por kg/unidade</p><div class="value" style="font-size:18px" data-stock-cost="'+esc(x.id)+'">'+money(x.unit)+'</div><p class="small">Valor estimado deste estoque</p><div class="value" data-stock-value="'+esc(x.id)+'">'+money(x.value)+'</div><button class="btn primary" type="button" data-stock-save="'+esc(x.id)+'" style="margin-top:12px">Salvar estoque</button></div>').join("")+'</div>';
+host.querySelectorAll("[data-stock-qty]").forEach(input=>input.addEventListener("input",()=>{let row=rows.find(x=>x.id===input.dataset.stockQty);if(!row)return;let qty=n(input.value);let value=qty*row.unit;let out=host.querySelector('[data-stock-value="'+input.dataset.stockQty+'"]');if(out)out.textContent=money(value)}));
+host.querySelectorAll("[data-stock-save]").forEach(btn=>btn.onclick=()=>{let id=btn.dataset.stockSave,input=host.querySelector('[data-stock-qty="'+id+'"]');if(!input)return;let stored={};try{stored=JSON.parse(localStorage.getItem("rhmManualStockByProduct")||"{}")}catch(e){}stored[id]=Math.max(0,n(input.value));localStorage.setItem("rhmManualStockByProduct",JSON.stringify(stored));btn.textContent="Salvo";let row=rows.find(x=>x.id===id);if(row)row.qty=stored[id];summary();setTimeout(()=>{btn.textContent="Salvar estoque"},1000)});
 }
 function setupSimplePayables(){
 const clear=()=>{editingPayableId=null;document.getElementById("payCategory").value="Impostos";document.getElementById("paySupplier").value="";document.getElementById("payDescription").value="";document.getElementById("payAmount").value="";document.getElementById("payDue").value="";document.getElementById("payStatus").value="Em aberto";document.getElementById("savePayable").textContent="Salvar conta a pagar";document.getElementById("cancelPayableEdit").hidden=true};
