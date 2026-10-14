@@ -158,7 +158,7 @@ let buys=purchasesMonth.reduce((s,x)=>s+total(x,"Compras"),0)+weeklyBuy;
 let exp=expensesMonth.reduce((s,x)=>s+num(x.valor),0)+simExpenses;
 let arRows=D["Contas a receber"]||[];
 let receivable=arRows.length?arRows.reduce((s,x)=>s+Math.max(0,num(x.valor)-num(x.recebido)),0):valid.reduce((s,x)=>s+Math.max(0,total(x,"Vendas")-num(x.recebido)),0);
-let simProfit=simProducts.reduce((sum,p)=>{let q=num(p.sacks)*num(p.sackKg),buy=num(p.sacks)*num(p.sackPrice),cost=q>0?(buy+num(p.otherLot))/q:0;let isRed=/vermelha/i.test(p.name||""),isWhite=/branca/i.test(p.name||"");let rows=weekly.filter(x=>isRed?num(x.redSacks)>0:isWhite?num(x.whiteSacks)>0:false);if(rows.length){let kg=rows.reduce((a,x)=>a+num(isRed?x.redSacks:x.whiteSacks)*num(x.sackKg),0),merch=rows.reduce((a,x)=>a+num(isRed?x.redSacks*x.redPrice:x.whiteSacks*x.whitePrice),0),fr=rows.reduce((a,x)=>{let all=(num(x.redSacks)+num(x.whiteSacks))*num(x.sackKg);return a+(all?num(x.freight)*num(isRed?x.redSacks:x.whiteSacks)*num(x.sackKg)/all:0)},0);if(kg)cost=(merch+fr)/kg}cost+=num(p.pack)+num(p.label)+num(p.other);return sum+(num(p.price)-cost)*num(p.sold)},0);
+let simProfit=simProducts.reduce((sum,p)=>{let q=num(p.sacks)*num(p.sackKg),buy=num(p.sacks)*num(p.sackPrice),cost=q>0?buy/q:0;return sum+(num(p.price)-cost)*num(p.sold)},0);
 let gross=salesMonth.reduce((s,x)=>s+profit(x),0)+simProfit,net=gross-exp;
 let invLegacy=D.Produtos.reduce((s,x)=>s+Math.max(0,stock(x))*unitcost(x),0);
 let invWeekly=0;
