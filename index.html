@@ -118,7 +118,7 @@ document.getElementById("cancelEditPurchase").onclick=()=>{editingPurchaseId=nul
 
 document.getElementById("addCostProduct").onclick=()=>{products.push(makeProduct(""));persist();render()};
 const sharedFreightInput=document.getElementById("sharedQuinoaFreight");sharedFreightInput.value=localStorage.getItem("rhmSharedQuinoaFreight")||"0";sharedFreightInput.addEventListener("input",()=>{persist();render()});
-expense.value=localStorage.getItem("rhmMultiProductExpenses")||"0";expense.addEventListener("input",updateResults);document.getElementById("sharedQuinoaFreight").value=localStorage.getItem("rhmSharedQuinoaFreight")||"0";renderPurchaseHistory();render()
+expense.value=localStorage.getItem("rhmMultiProductExpenses")||"0";expense.addEventListener("input",()=>{updateResults();persist()});document.getElementById("sharedQuinoaFreight").value=localStorage.getItem("rhmSharedQuinoaFreight")||"0";renderPurchaseHistory();render()
 }
 let editingPayableId=null;
 function getPayables(){try{let v=JSON.parse(localStorage.getItem("rhmPayablesSimple")||"[]");return Array.isArray(v)?v:[]}catch(e){return[]}}
