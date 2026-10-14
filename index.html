@@ -168,7 +168,7 @@ let buys=purchasesMonth.reduce((s,x)=>s+total(x,"Compras"),0)+weeklyBuy;
 let exp=expensesMonth.reduce((s,x)=>s+num(x.valor),0)+simExpenses;
 let arRows=D["Contas a receber"]||[];
 let receivable=arRows.length?arRows.reduce((s,x)=>s+Math.max(0,num(x.valor)-num(x.recebido)),0):valid.reduce((s,x)=>s+Math.max(0,total(x,"Vendas")-num(x.recebido)),0);
-let simProfit=simProducts.reduce((sum,p)=>{let q=num(p.sacks)*num(p.sackKg),buy=num(p.sacks)*num(p.sackPrice),cost=q>0?buy/q:0;return sum+(num(p.price)-cost)*num(p.sold)},0);
+let sharedFreight=num(localStorage.getItem("rhmSharedQuinoaFreight")),sharedEligible=simProducts.filter(p=>p.sharedFreightEligible===true||(/quinoa\\s+(vermelha|branca)/i.test(p.name||"")&&p.sharedFreightEligible!==false)),sharedKg=sharedEligible.reduce((s,p)=>s+num(p.sacks)*num(p.sackKg),0);let simProfit=simProducts.reduce((sum,p)=>{let q=num(p.sacks)*num(p.sackKg);let base=q>0?(num(p.sacks)*num(p.sackPrice)+num(p.otherLot))/q:0;let eligible=p.sharedFreightEligible===true||(/quinoa\\s+(vermelha|branca)/i.test(p.name||"")&&p.sharedFreightEligible!==false);let freightPerKg=eligible&&sharedKg>0?sharedFreight/sharedKg:0;let unitCost=base+num(p.pack)+num(p.label)+num(p.other)+freightPerKg;return sum+(num(p.price)-unitCost)*num(p.sold)},0);
 let gross=salesMonth.reduce((s,x)=>s+profit(x),0)+simProfit,net=gross-exp;
 let invLegacy=D.Produtos.reduce((s,x)=>s+Math.max(0,stock(x))*unitcost(x),0);
 let invWeekly=0;
