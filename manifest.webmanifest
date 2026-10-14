@@ -1,0 +1,18 @@
+{
+  "name": "RHM Controle de Custos",
+  "short_name": "RHM Custos",
+  "description": "Controle de compras, estoque, custos, vendas e recebimentos",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6fa",
+  "theme_color": "#183153",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
