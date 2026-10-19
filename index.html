@@ -283,7 +283,7 @@ const num=v=>Number(v)||0;
 let valid=D.Vendas.filter(x=>x.status!=="Cancelado"),salesMonth=valid.filter(inRange),purchasesMonth=D.Compras.filter(inRange),expensesMonth=D["Despesas gerais"].filter(inRange);
 let simProducts=[],weekly=[];
 try{simProducts=JSON.parse(localStorage.getItem("rhmMultiProductCosts")||"[]")}catch(e){}
-try{weekly=JSON.parse(localStorage.getItem("rhmWeeklyPurchases")||"[]")}catch(e){}if(!Array.isArray(weekly))weekly=[];const deletedWeeklyIds=new Set((((D._deletedExtraIds||{}).rhmWeeklyPurchases)||[]).map(String));weekly=weekly.filter(x=>!deletedWeeklyIds.has(String(x&&x.id)));
+try{weekly=JSON.parse(localStorage.getItem("rhmWeeklyPurchases")||"[]")}catch(e){}if(!Array.isArray(weekly))weekly=[];const deletedWeeklyIds=new Set((((D._deletedExtraIds||{}).rhmWeeklyPurchases)||[]).map(String));weekly=weekly.filter(x=>!deletedWeeklyIds.has(String(x&&x.id)));weekly=cleanDuplicatePurchases(weekly);
 let simExpenses=num(localStorage.getItem("rhmMultiProductExpenses"));
 let weeklyMonth=weekly.filter(x=>String(x.date||"")>=startDate&&String(x.date||"")<=endDate);
 let weeklyBuy=weeklyMonth.reduce((s,x)=>s+num(x.redSacks)*num(x.redPrice)+num(x.whiteSacks)*num(x.whitePrice)+num(x.freight),0);
