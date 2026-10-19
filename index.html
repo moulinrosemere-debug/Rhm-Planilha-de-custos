@@ -43,6 +43,58 @@
   .formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Refinamento visual — mantém a estrutura e as funções existentes */
+:root{--navy:#17324f;--blue:#245f83;--bg:#f4f7fa;--line:#dbe4ec;--text:#1b2a39;--muted:#627386;--accent:#17847c;--accent-soft:#e8f5f3}
+body{background:var(--bg);color:var(--text)}
+header{background:linear-gradient(120deg,#17324f,#214c6b);box-shadow:0 3px 14px rgba(18,42,64,.12)}
+header h1{letter-spacing:-.025em}
+.wrap{padding-top:22px;padding-bottom:30px}
+.panel,.card{border-color:#e0e7ee;box-shadow:0 3px 12px rgba(24,49,77,.045)}
+.panel{border-radius:14px}
+.panel h2{letter-spacing:-.015em}
+.btn,.tab{transition:background-color .15s ease,border-color .15s ease,transform .15s ease}
+.btn.primary,.tab.active{background:var(--navy);border-color:var(--navy)}
+.btn:focus-visible,.tab:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(23,132,124,.24);outline-offset:1px}
+.field input:focus,.field select:focus,.authbox input:focus,.search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(23,132,124,.10);outline:none}
+.syncbar{border:1px solid #d5e8f4}
+.notice{border-left-color:#d1a24c}
+#summary .card{border-top:3px solid #d7e7ec}
+#summary .card:nth-child(4){border-top-color:var(--accent)}
+#summary .value{letter-spacing:-.025em}
+.tabs{padding:3px 0 6px}
+.tab.active{box-shadow:0 3px 8px rgba(23,50,79,.16)}
+@media(max-width:600px){
+  .wrap{padding:10px 10px 24px}
+  header{padding:17px 13px;border-radius:0 0 14px 14px}
+  header h1{font-size:19px}
+  .headeractions{gap:6px}
+  .panel{padding:13px 12px;margin-bottom:11px;border-radius:13px}
+  .panel h2{padding-left:9px;border-left:3px solid var(--accent);font-size:17px;margin-bottom:12px}
+  .tabs{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;-webkit-overflow-scrolling:touch;gap:7px;padding:2px 1px 9px}
+  .tabs .tab{flex:0 0 auto;min-height:42px;white-space:nowrap;padding:10px 13px}
+  .toolbar{display:grid;grid-template-columns:1fr;gap:7px}
+  .toolbar .btn{width:100%;min-height:44px;margin:0}
+  .actions{display:grid;grid-template-columns:1fr;gap:8px}
+  .actions .btn{width:100%;min-height:46px;margin:0}
+  .cards{gap:8px}
+  .card{padding:10px;border-radius:11px}
+  #summary .card{min-height:91px}
+  #summary .value{font-size:clamp(16px,4.6vw,20px)}
+  .label{font-size:11.5px}
+  .value{margin-top:5px}
+  .formgrid{gap:10px}
+  .field input,.field select,.authbox input,.search{min-height:47px}
+  .tablewrap,#weeklyPurchaseTable,#invoiceSalesHistory,#simpleStockTable,#payablesTable,#monthlySalesDetails{border:1px solid #e5ebf1;border-radius:10px;background:white}
+  th{position:static}
+  .authbox{padding:16px 13px}
+  .authrow{display:grid;grid-template-columns:1fr 1fr}
+  .authrow .btn{min-height:45px}
+}
+@media(min-width:601px){
+  .btn:hover,.tab:hover{border-color:#a9bdcc}
+  .btn.primary:hover,.tab.active:hover{background:#214968}
+}
 </style></head><body><header><div><h1>RHM Comércio de Produtos Ltda.</h1><p>Controle de compras, vendas, custos, estoque e recebimentos</p></div><div class="headeractions"><span id="accountLabel" class="small" style="color:#d8e5f3"></span><button id="logout" hidden>Sair</button></div></header>
 <main class="wrap"><section class="panel authbox" id="authPanel"><h2 id="authTitle">Entrar no RHM Controle de Custos</h2><p class="small">Entre com seu e-mail e senha para acessar os mesmos dados no computador e no celular.</p><form id="authForm"><div class="field"><label for="authEmail">E-mail</label><input id="authEmail" type="email" autocomplete="email" required></div><div class="field"><label for="authPassword">Senha</label><input id="authPassword" type="password" autocomplete="current-password" minlength="6" required></div><div class="authrow"><button class="btn primary" type="submit" id="authSubmit">Entrar</button><button class="btn" type="button" id="toggleAuth">Criar conta</button></div><p id="authMessage" class="small" role="status"></p></form></section><div id="appShell" hidden><div class="syncbar" id="syncStatus">Conectando à nuvem…</div><div class="notice"><b>Sincronização automática:</b> os registros são salvos na nuvem. Use o mesmo login no celular e no computador. Recomendamos exportar um backup periodicamente.</div>
 <div class="toolbar"><button class="btn primary" id="backup">Exportar backup</button><button class="btn" id="importBtn">Importar backup</button><input type="file" id="file" accept=".json" hidden><button class="btn" id="csv">Exportar aba para Excel/CSV</button></div>
